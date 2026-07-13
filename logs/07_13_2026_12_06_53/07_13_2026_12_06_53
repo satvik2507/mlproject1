@@ -1,0 +1,4 @@
+[2026-07-13 12:06:54,149] 10 root - INFO - Starting the ML Project
+[2026-07-13 12:06:54,149] 22 root - INFO - Entered the data ingestion method or component
+[2026-07-13 12:06:54,149] 17 root - INFO - Reading data from SQL database
+[2026-07-13 12:06:58,197] 17 root - INFO - Exception occurred
