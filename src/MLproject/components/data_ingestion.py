@@ -72,7 +72,7 @@ class DataIngestion:
         logging.info("Entered the data ingestion method or component")
 
         try:
-            df = pd.read_csv("C:\\Users\\Satvik\\Desktop\\MLproject\\data\\spam.csv")
+            df = pd.read_csv(r"C:\Users\Satvik\Desktop\MLproject\notebook\data\spam.csv")
 
             logging.info("Read the CSV dataset as dataframe")
 
