@@ -1,0 +1,13 @@
+[2026-07-15 13:49:29,808] 12 root - INFO - Starting the ML Project
+[2026-07-15 13:49:29,808] 24 root - INFO - Entered the data ingestion method or component
+[2026-07-15 13:49:29,816] 29 root - INFO - Read the CSV dataset as dataframe
+[2026-07-15 13:49:29,829] 44 root - INFO - Train test split initiated
+[2026-07-15 13:49:29,838] 65 root - INFO - Ingestion of the data is completed
+[2026-07-15 13:49:29,845] 106 root - INFO - Read train and test data completed
+[2026-07-15 13:49:29,846] 113 root - INFO - Starting text transformation
+[2026-07-15 13:50:24,916] 125 root - INFO - Text transformation completed
+[2026-07-15 13:50:24,916] 146 root - INFO - Target encoding completed
+[2026-07-15 13:50:24,916] 78 root - INFO - Creating Count Vectorizer
+[2026-07-15 13:50:24,916] 86 root - INFO - Count Vectorizer created successfully
+[2026-07-15 13:50:24,966] 162 root - INFO - Count Vectorization completed
+[2026-07-15 13:50:24,966] 174 root - INFO - Saved Count Vectorizer object

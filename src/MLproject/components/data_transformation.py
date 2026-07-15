@@ -1,99 +1,187 @@
+import os
 import sys
-from dataclasses import dataclass
-import numpy as np 
+import string
+import nltk
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer 
+
+from dataclasses import dataclass
+
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import LabelEncoder
+
+from src.MLproject.exception import CustomException
+from src.MLproject.logger import logging
 from src.MLproject.utils import save_object
 
-from src.MLproject.logger import logging
-from src.MLproject.exception import CustomException
-import os 
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path: str = os.path.join("artifacts", "preprocessor.pkl") 
+    preprocessor_obj_file_path: str = os.path.join(
+        "artifacts",
+        "preprocessor.pkl"
+    )
 
 
 class DataTransformation:
-    
+
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
+        self.ps = PorterStemmer()
 
-    def get_data_transformer_object(self):
+
+    def transform_text(self, text):
+
         try:
-            numerical_columns = ["v1"]
-            categorical_columns = ["v2"]
+            text = str(text).lower()
 
-            num_pipeline = Pipeline(
-                steps=[
-                    ("imputer", SimpleImputer(strategy="median")),
-                    ("scaler", StandardScaler())
-                ]
-            )
+            text = nltk.word_tokenize(text)
 
-            cat_pipeline = Pipeline(
-                steps=[
-                    ("imputer", SimpleImputer(strategy="most_frequent")),
-                    ("one_hot_encoder", OneHotEncoder()),
-                    ("scaler", StandardScaler(with_mean=False))
-                ]
-            )
+            y = []
 
-            logging.info(f"Categorical columns: {categorical_columns}")
-            logging.info(f"Numerical columns: {numerical_columns}")
+            # Remove special characters
+            for word in text:
+                if word.isalnum():
+                    y.append(word)
 
-            preprocessor = ColumnTransformer(
-                [
-                    ("num_pipeline", num_pipeline, numerical_columns),
-                    ("cat_pipeline", cat_pipeline, categorical_columns)
-                ]
-            )
+            text = y[:]
+            y.clear()
 
-            return preprocessor
+            # Remove stopwords and punctuation
+            for word in text:
+                if (
+                    word not in stopwords.words("english")
+                    and word not in string.punctuation
+                ):
+                    y.append(word)
+
+            text = y[:]
+            y.clear()
+
+            # Stemming
+            for word in text:
+                y.append(
+                    self.ps.stem(word)
+                )
+
+            return " ".join(y)
 
         except Exception as e:
             raise CustomException(e, sys)
-        
 
-    def initiate_data_transformation(self, train_path, test_path):
+
+    def get_data_transformer_object(self):
+
+        try:
+            logging.info(
+                "Creating Count Vectorizer"
+            )
+
+            vectorizer = CountVectorizer(
+                max_features=3000
+            )
+
+            logging.info(
+                "Count Vectorizer created successfully"
+            )
+
+            return vectorizer
+
+        except Exception as e:
+            raise CustomException(e, sys)
+
+
+    def initiate_data_transformation(
+        self,
+        train_path,
+        test_path
+    ):
+
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
 
-            logging.info("Read train and test data completed")
-
-            logging.info("Obtaining preprocessing object")
-
-            preprocessing_obj = self.get_data_transformer_object()
-
-            target_column_name = "v1"
-            numerical_columns = ["v1"]
-
-            input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
-            target_feature_train_df = train_df[target_column_name]
-
-            input_feature_test_df = test_df.drop(columns=[target_column_name], axis=1)
-            target_feature_test_df = test_df[target_column_name]
-
             logging.info(
-                f"Applying preprocessing object on training dataframe and testing dataframe."
+                "Read train and test data completed"
             )
 
-            input_feature_train_arr = preprocessing_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
+            target_column_name = "Category"
+            text_column_name = "Message"
 
-            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
-            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+            logging.info(
+                "Starting text transformation"
+            )
 
-            logging.info(f"Saved preprocessing object.")
+            train_df[text_column_name] = train_df[
+                text_column_name
+            ].apply(self.transform_text)
+
+            test_df[text_column_name] = test_df[
+                text_column_name
+            ].apply(self.transform_text)
+
+            logging.info(
+                "Text transformation completed"
+            )
+
+            X_train = train_df[text_column_name]
+            X_test = test_df[text_column_name]
+
+            y_train = train_df[target_column_name]
+            y_test = test_df[target_column_name]
+
+            # Encode ham/spam
+            label_encoder = LabelEncoder()
+
+            y_train = label_encoder.fit_transform(
+                y_train
+            )
+
+            y_test = label_encoder.transform(
+                y_test
+            )
+
+            logging.info(
+                "Target encoding completed"
+            )
+
+            preprocessing_obj = (
+                self.get_data_transformer_object()
+            )
+
+            X_train = preprocessing_obj.fit_transform(
+                X_train
+            )
+
+            X_test = preprocessing_obj.transform(
+                X_test
+            )
+
+            logging.info(
+                "Count Vectorization completed"
+            )
+
+            save_object(
+                file_path=(
+                    self.data_transformation_config
+                    .preprocessor_obj_file_path
+                ),
+                obj=preprocessing_obj
+            )
+
+            logging.info(
+                "Saved Count Vectorizer object"
+            )
 
             return (
-                train_arr,
-                test_arr,
-                self.data_transformation_config.preprocessor_obj_file_path,
+                X_train,
+                X_test,
+                y_train,
+                y_test,
+                self.data_transformation_config
+                .preprocessor_obj_file_path
             )
 
         except Exception as e:
