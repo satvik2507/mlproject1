@@ -1,10 +1,10 @@
+flask
 numpy
-
 pandas
-python-dotenv
-mysql-connector-python
-pymysql 
 scikit-learn
 nltk
 matplotlib
+python-dotenv
+mysql-connector-python
+pymysql
 ipykernel

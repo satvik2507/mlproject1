@@ -1,7 +1,5 @@
 import os
 import sys
-
-from src.MLproject.exception import CustomException
 from src.MLproject.utils import load_object
 from src.MLproject.text_preprocessing import transform_text
 
@@ -40,5 +38,6 @@ class PredictPipeline:
 
             return prediction[0]
 
-        except Exception as e:
-            raise CustomException(e, sys)
+        except Exception:
+            raise
+

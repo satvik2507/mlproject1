@@ -21,4 +21,4 @@ class CustomException(Exception):
     return self.error_message
 
   def __repr__(self):
-    return CustomException.__name__.str()
+    return self.error_message

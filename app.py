@@ -1,58 +1,38 @@
-import sys
+from flask import Flask, render_template, request
+from src.MLproject.pipeline.predict_pipeline import PredictPipeline
 
-from src.MLproject.logger import logging
-from src.MLproject.exception import CustomException
+app = Flask(__name__)
 
-from src.MLproject.components.data_ingestion import DataIngestion
-from src.MLproject.components.data_transformation import DataTransformation
-from src.MLproject.components.model_trainer import ModelTrainer
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/predict", methods=["POST"])
+def predict():
+
+    message = request.form["message"]
+
+    pipeline = PredictPipeline()
+
+    prediction = pipeline.predict(message)
+
+    if prediction == 1:
+        result = "Spam"
+    else:
+        result = "Ham"
+
+    return render_template(
+        "index.html",
+        prediction=result,
+        message=message
+    )
 
 
 if __name__ == "__main__":
-
-    logging.info("Starting the ML Project")
-
-    try:
-
-        # Data Ingestion
-        data_ingestion = DataIngestion()
-
-        train_data_path, test_data_path = (
-            data_ingestion.initiate_data_ingestion()
-        )
-
-        print("Data Ingestion Completed")
-
-        # Data Transformation
-        data_transformation = DataTransformation()
-
-        (
-            X_train,
-            X_test,
-            y_train,
-            y_test,
-            _
-        ) = data_transformation.initiate_data_transformation(
-            train_data_path,
-            test_data_path
-        )
-
-        print("Data Transformation Completed")
-
-        # Model Training
-        model_trainer = ModelTrainer()
-
-        report = model_trainer.initiate_model_trainer(
-            X_train,
-            X_test,
-            y_train,
-            y_test
-        )
-
-        print(report)
-
-        print("Model Training Completed")
-
-    except Exception as e:
-        logging.info("Exception occurred")
-        raise CustomException(e, sys)
+    app.run(
+        host="127.0.0.1",
+        port=5001,
+        debug=False
+    )
