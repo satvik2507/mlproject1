@@ -1,0 +1,22 @@
+[2026-07-16 14:43:50,499] 41 root - INFO - Starting the ML Project
+[2026-07-16 14:43:50,499] 24 root - INFO - Entered the data ingestion method or component
+[2026-07-16 14:43:50,509] 29 root - INFO - Read the CSV dataset as dataframe
+[2026-07-16 14:43:50,517] 44 root - INFO - Train test split initiated
+[2026-07-16 14:43:50,523] 65 root - INFO - Ingestion of the data is completed
+[2026-07-16 14:43:50,538] 67 root - INFO - Read train and test data completed
+[2026-07-16 14:43:50,538] 74 root - INFO - Starting text transformation
+[2026-07-16 14:43:51,910] 81 root - INFO - Text transformation completed
+[2026-07-16 14:43:51,913] 101 root - INFO - Target encoding completed
+[2026-07-16 14:43:51,914] 39 root - INFO - Creating Count Vectorizer
+[2026-07-16 14:43:51,914] 47 root - INFO - Count Vectorizer created successfully
+[2026-07-16 14:43:51,951] 117 root - INFO - Count Vectorization completed
+[2026-07-16 14:43:51,957] 129 root - INFO - Saved Count Vectorizer object
+[2026-07-16 14:43:51,957] 108 root - INFO - Model training started
+[2026-07-16 14:43:51,957] 49 root - INFO - Training Multinomial Naive Bayes
+[2026-07-16 14:43:51,968] 85 root - INFO - Multinomial Naive Bayes - Accuracy: 0.9812, Precision: 0.9384, Recall: 0.9195, F1 Score: 0.9288
+[2026-07-16 14:43:51,968] 49 root - INFO - Training Logistic Regression
+[2026-07-16 14:43:51,990] 85 root - INFO - Logistic Regression - Accuracy: 0.9839, Precision: 0.9925, Recall: 0.8859, F1 Score: 0.9362
+[2026-07-16 14:43:51,990] 128 root - INFO - Model evaluation report: {'Multinomial Naive Bayes': {'accuracy': 0.9811659192825112, 'precision': 0.9383561643835616, 'recall': 0.9194630872483222, 'f1_score': 0.9288135593220339}, 'Logistic Regression': {'accuracy': 0.9838565022421525, 'precision': 0.9924812030075187, 'recall': 0.8859060402684564, 'f1_score': 0.9361702127659575}}
+[2026-07-16 14:43:51,990] 146 root - INFO - Best model found: Logistic Regression
+[2026-07-16 14:43:51,990] 150 root - INFO - Best model F1 score: 0.9362
+[2026-07-16 14:43:51,991] 165 root - INFO - Best model saved successfully

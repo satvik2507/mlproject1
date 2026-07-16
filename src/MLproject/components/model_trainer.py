@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import LinearSVC
 
 from sklearn.metrics import (
     accuracy_score,
@@ -49,13 +48,10 @@ class ModelTrainer:
 
                 logging.info(f"Training {model_name}")
 
-                # Train model
                 model.fit(X_train, y_train)
 
-                # Predict test data
                 y_pred = model.predict(X_test)
 
-                # Calculate evaluation metrics
                 accuracy = accuracy_score(
                     y_test,
                     y_pred
@@ -79,7 +75,6 @@ class ModelTrainer:
                     zero_division=0
                 )
 
-                # Store model performance
                 report[model_name] = {
                     "accuracy": accuracy,
                     "precision": precision,
@@ -112,7 +107,6 @@ class ModelTrainer:
         try:
             logging.info("Model training started")
 
-            # Define models
             models = {
 
                 "Multinomial Naive Bayes": MultinomialNB(),
@@ -121,13 +115,8 @@ class ModelTrainer:
                     max_iter=1000,
                     random_state=42
                 ),
-
-                "Linear SVC": LinearSVC(
-                    random_state=42
-                )
             }
 
-            # Evaluate models
             model_report = self.evaluate_models(
                 X_train=X_train,
                 y_train=y_train,
@@ -140,7 +129,6 @@ class ModelTrainer:
                 f"Model evaluation report: {model_report}"
             )
 
-            # Select best model using F1 score
             best_model_name = max(
                 model_report,
                 key=lambda model_name:
@@ -163,14 +151,12 @@ class ModelTrainer:
                 f"Best model F1 score: {best_model_score:.4f}"
             )
 
-            # Check model performance
             if best_model_score < 0.80:
                 raise CustomException(
                     "No suitable model found with F1 score above 0.80",
                     sys
                 )
 
-            # Save best model
             save_object(
                 file_path=self.model_trainer_config.trained_model_file_path,
                 obj=best_model

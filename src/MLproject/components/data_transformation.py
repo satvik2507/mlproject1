@@ -15,6 +15,7 @@ from sklearn.preprocessing import LabelEncoder
 from src.MLproject.exception import CustomException
 from src.MLproject.logger import logging
 from src.MLproject.utils import save_object
+from src.MLproject.text_preprocessing import transform_text
 
 
 @dataclass
@@ -30,47 +31,7 @@ class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
         self.ps = PorterStemmer()
-
-
-    def transform_text(self, text):
-
-        try:
-            text = str(text).lower()
-
-            text = nltk.word_tokenize(text)
-
-            y = []
-
-            # Remove special characters
-            for word in text:
-                if word.isalnum():
-                    y.append(word)
-
-            text = y[:]
-            y.clear()
-
-            # Remove stopwords and punctuation
-            for word in text:
-                if (
-                    word not in stopwords.words("english")
-                    and word not in string.punctuation
-                ):
-                    y.append(word)
-
-            text = y[:]
-            y.clear()
-
-            # Stemming
-            for word in text:
-                y.append(
-                    self.ps.stem(word)
-                )
-
-            return " ".join(y)
-
-        except Exception as e:
-            raise CustomException(e, sys)
-
+        
 
     def get_data_transformer_object(self):
 
@@ -114,13 +75,8 @@ class DataTransformation:
                 "Starting text transformation"
             )
 
-            train_df[text_column_name] = train_df[
-                text_column_name
-            ].apply(self.transform_text)
-
-            test_df[text_column_name] = test_df[
-                text_column_name
-            ].apply(self.transform_text)
+            train_df[text_column_name] = train_df[text_column_name].apply(transform_text)
+            test_df[text_column_name] = test_df[text_column_name].apply(transform_text)
 
             logging.info(
                 "Text transformation completed"
@@ -132,7 +88,6 @@ class DataTransformation:
             y_train = train_df[target_column_name]
             y_test = test_df[target_column_name]
 
-            # Encode ham/spam
             label_encoder = LabelEncoder()
 
             y_train = label_encoder.fit_transform(
