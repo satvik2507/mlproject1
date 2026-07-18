@@ -1,8 +1,10 @@
 # SMS Spam Detection System
 --- 
 
-This is the github repository created for the End to End Machine Learning project done by: Satvik 
-[ Data Source ](https://www.kaggle.com/datasets/abdallahwagih/spam-emails)
+This is the GitHub repository created for the End-to-End Machine Learning project done by **Satvik**.
+
+**Data Source:**  
+[Spam Emails Dataset](https://www.kaggle.com/datasets/abdallahwagih/spam-emails)
 
 A Machine Learning web application that classifies SMS messages as **Spam** or **Ham (Not Spam)** using Logistic Regression.
 
